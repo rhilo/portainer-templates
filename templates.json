@@ -1,0 +1,450 @@
+{
+  "version": "3",
+  "templates": [
+    {
+      "id": 1,
+      "type": 1,
+      "title": "Open WebUI",
+      "description": "A self-hosted web interface for AI chat with support for Ollama and OpenAI-compatible APIs",
+      "note": "Set <code>OLLAMA_BASE_URL</code> to your Ollama instance (e.g. <code>http://host.docker.internal:11434</code>) or leave blank to use the bundled Ollama. Access the UI on port 3000.",
+      "categories": ["ai", "llm"],
+      "platform": "linux",
+      "logo": "https://raw.githubusercontent.com/open-webui/open-webui/main/static/favicon.png",
+      "image": "ghcr.io/open-webui/open-webui:main",
+      "ports": ["3000/tcp"],
+      "env": [
+        {
+          "name": "OLLAMA_BASE_URL",
+          "label": "Ollama base URL",
+          "description": "URL of your Ollama instance (e.g. http://host.docker.internal:11434). Leave blank to use the bundled Ollama instance.",
+          "default": "http://host.docker.internal:11434"
+        }
+      ],
+      "volumes": [
+        {
+          "container": "/app/backend/data"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": 1,
+      "title": "CoreDNS",
+      "description": "A flexible, extensible DNS server written in Go",
+      "note": "Mount a <code>Corefile</code> at <code>/etc/coredns/Corefile</code> to configure DNS zones and plugins. Exposes DNS on port 53 (TCP and UDP) and Prometheus metrics on port 9153.",
+      "categories": ["networking", "dns"],
+      "platform": "linux",
+      "logo": "https://cncf-branding.netlify.app/img/projects/coredns/icon/color/coredns-icon-color.png",
+      "image": "coredns/coredns:latest",
+      "ports": ["53/tcp", "53/udp", "9153/tcp"],
+      "volumes": [
+        {
+          "container": "/etc/coredns"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": 1,
+      "title": "Traefik",
+      "description": "A modern HTTP reverse proxy and load balancer",
+      "note": "Exposes the Traefik dashboard on port 8080 (<code>/dashboard/</code>). Mount your Traefik configuration at <code>/etc/traefik</code>.",
+      "categories": ["networking", "proxy"],
+      "platform": "linux",
+      "logo": "https://raw.githubusercontent.com/traefik/traefik/master/docs/content/assets/img/traefik.logo.png",
+      "image": "traefik:latest",
+      "ports": ["80/tcp", "443/tcp", "8080/tcp"],
+      "volumes": [
+        {
+          "container": "/var/run/docker.sock",
+          "bind": "/var/run/docker.sock"
+        },
+        {
+          "container": "/etc/traefik"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": 1,
+      "title": "PostgreSQL",
+      "description": "The most advanced open-source database",
+      "categories": ["database"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/postgres.png",
+      "image": "postgres:latest",
+      "env": [
+        {
+          "name": "POSTGRES_USER",
+          "label": "Superuser"
+        },
+        {
+          "name": "POSTGRES_PASSWORD",
+          "label": "Superuser password"
+        }
+      ],
+      "ports": ["5432/tcp"],
+      "volumes": [
+        {
+          "container": "/var/lib/postgresql/data"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": 1,
+      "title": "MariaDB",
+      "description": "Performance beyond MySQL",
+      "categories": ["database"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/mariadb.png",
+      "image": "mariadb:latest",
+      "env": [
+        {
+          "name": "MYSQL_ROOT_PASSWORD",
+          "label": "Root password"
+        }
+      ],
+      "ports": ["3306/tcp"],
+      "volumes": [
+        {
+          "container": "/var/lib/mysql"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": 1,
+      "title": "MongoDB",
+      "description": "Open-source document-oriented database",
+      "categories": ["database"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/mongo.png",
+      "image": "mongo:latest",
+      "ports": ["27017/tcp"],
+      "volumes": [
+        {
+          "container": "/data/db"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": 1,
+      "title": "Redis",
+      "description": "Open-source in-memory data structure store",
+      "categories": ["database", "cache"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/redis.png",
+      "image": "redis:latest",
+      "ports": ["6379/tcp"],
+      "volumes": [
+        {
+          "container": "/data"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": 1,
+      "title": "MinIO",
+      "description": "A distributed object storage server built for cloud applications and devops",
+      "categories": ["storage"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/minio.png",
+      "image": "quay.io/minio/minio:latest",
+      "ports": ["9000/tcp", "9001/tcp"],
+      "env": [
+        {
+          "name": "MINIO_ROOT_USER",
+          "label": "Root user"
+        },
+        {
+          "name": "MINIO_ROOT_PASSWORD",
+          "label": "Root password"
+        }
+      ],
+      "volumes": [
+        {
+          "container": "/data"
+        }
+      ],
+      "command": "server /data --console-address ':9001'"
+    },
+    {
+      "id": 9,
+      "type": 1,
+      "title": "Gitea",
+      "description": "A painless, self-hosted Git service",
+      "note": "Default admin account is configured on first startup. Access the web UI on port 3000 and SSH on port 222.",
+      "categories": ["development", "git"],
+      "platform": "linux",
+      "logo": "https://gitea.io/images/gitea.png",
+      "image": "gitea/gitea:latest",
+      "ports": ["3000/tcp", "222/tcp"],
+      "env": [
+        {
+          "name": "GITEA__database__DB_TYPE",
+          "label": "Database type",
+          "default": "sqlite3",
+          "description": "Database backend: sqlite3, mysql, or postgres"
+        }
+      ],
+      "volumes": [
+        {
+          "container": "/data"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": 1,
+      "title": "Grafana",
+      "description": "Open-source analytics and interactive visualisation web application",
+      "note": "Default credentials are <b>admin / admin</b>. You will be prompted to change the password on first login.",
+      "categories": ["monitoring"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/grafana.png",
+      "image": "grafana/grafana:latest",
+      "ports": ["3000/tcp"],
+      "env": [
+        {
+          "name": "GF_SECURITY_ADMIN_USER",
+          "label": "Admin username",
+          "default": "admin"
+        },
+        {
+          "name": "GF_SECURITY_ADMIN_PASSWORD",
+          "label": "Admin password",
+          "default": "admin"
+        }
+      ],
+      "volumes": [
+        {
+          "container": "/var/lib/grafana"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "type": 1,
+      "title": "Nginx",
+      "description": "High performance web server",
+      "categories": ["webserver"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/nginx.png",
+      "image": "nginx:latest",
+      "ports": ["80/tcp", "443/tcp"],
+      "volumes": [
+        {
+          "container": "/etc/nginx"
+        },
+        {
+          "container": "/usr/share/nginx/html"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "type": 1,
+      "title": "Caddy",
+      "description": "Open-source web server with automatic HTTPS written in Go",
+      "categories": ["webserver"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/caddy.png",
+      "image": "caddy:latest",
+      "ports": ["80/tcp", "443/tcp"],
+      "volumes": [
+        {
+          "container": "/data"
+        },
+        {
+          "container": "/config"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "type": 1,
+      "title": "Docker Registry",
+      "description": "Docker image registry",
+      "categories": ["docker"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/registry.png",
+      "image": "registry:latest",
+      "ports": ["5000/tcp"],
+      "volumes": [
+        {
+          "container": "/var/lib/registry"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "type": 1,
+      "title": "File Browser",
+      "description": "A web-based file manager",
+      "note": "Default credentials are <b>admin / admin</b>.",
+      "categories": ["filesystem", "storage"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/filebrowser.png",
+      "image": "filebrowser/filebrowser:latest",
+      "ports": ["80/tcp"],
+      "volumes": [
+        {
+          "container": "/data"
+        },
+        {
+          "container": "/srv"
+        }
+      ],
+      "command": "--port 80 --database /data/database.db --root /srv"
+    },
+    {
+      "id": 15,
+      "type": 1,
+      "title": "Jenkins",
+      "description": "Open-source continuous integration tool",
+      "categories": ["continuous-integration"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/jenkins.png",
+      "image": "jenkins/jenkins:lts-jdk17",
+      "ports": ["8080/tcp", "50000/tcp"],
+      "volumes": [
+        {
+          "container": "/var/jenkins_home"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "type": 1,
+      "title": "RabbitMQ",
+      "description": "Highly reliable open-source messaging system",
+      "categories": ["messaging"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/rabbitmq.png",
+      "image": "rabbitmq:management",
+      "ports": ["5672/tcp", "15672/tcp"],
+      "volumes": [
+        {
+          "container": "/var/lib/rabbitmq"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "type": 1,
+      "title": "InfluxDB",
+      "description": "Open-source time series database",
+      "categories": ["database", "monitoring"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/influxdb.png",
+      "image": "influxdb:latest",
+      "ports": ["8086/tcp"],
+      "env": [
+        {
+          "name": "DOCKER_INFLUXDB_INIT_MODE",
+          "default": "setup",
+          "preset": true
+        },
+        {
+          "name": "DOCKER_INFLUXDB_INIT_USERNAME",
+          "label": "Admin username"
+        },
+        {
+          "name": "DOCKER_INFLUXDB_INIT_PASSWORD",
+          "label": "Admin password"
+        },
+        {
+          "name": "DOCKER_INFLUXDB_INIT_ORG",
+          "label": "Organization name"
+        },
+        {
+          "name": "DOCKER_INFLUXDB_INIT_BUCKET",
+          "label": "Initial bucket name"
+        }
+      ],
+      "volumes": [
+        {
+          "container": "/var/lib/influxdb2"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "type": 1,
+      "title": "Prometheus",
+      "description": "Open-source systems monitoring and alerting toolkit",
+      "categories": ["monitoring"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/prometheus.png",
+      "image": "prom/prometheus:latest",
+      "ports": ["9090/tcp"],
+      "volumes": [
+        {
+          "container": "/etc/prometheus"
+        },
+        {
+          "container": "/prometheus"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "type": 2,
+      "title": "Portainer Agent",
+      "description": "Manage all the resources in your Swarm cluster",
+      "note": "The agent will be deployed globally inside your cluster and available on port 9001.",
+      "categories": ["portainer"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/portainer.png",
+      "repository": {
+        "url": "https://github.com/portainer/templates",
+        "stackfile": "stacks/portainer-agent/docker-stack.yml"
+      }
+    },
+    {
+      "id": 20,
+      "type": 3,
+      "title": "WordPress",
+      "description": "WordPress setup with a MySQL database",
+      "note": "Deploys a WordPress instance connected to a MySQL database.",
+      "categories": ["CMS"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/wordpress.png",
+      "repository": {
+        "url": "https://github.com/portainer/templates",
+        "stackfile": "stacks/wordpress/docker-compose.yml"
+      },
+      "env": [
+        {
+          "name": "MYSQL_DATABASE_PASSWORD",
+          "label": "Database root password",
+          "description": "Password used by the MySQL root user."
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "type": 3,
+      "title": "Node-RED",
+      "description": "Low-code programming for event-driven applications",
+      "note": "The TZ must be in Unix format, e.g. <code>America/New_York</code> — see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.",
+      "categories": ["automation", "iot"],
+      "platform": "linux",
+      "logo": "https://avatars.githubusercontent.com/u/5375661?s=200&v=4",
+      "repository": {
+        "url": "https://github.com/portainer/templates",
+        "stackfile": "edge/node-red/docker-compose.yml"
+      },
+      "env": [
+        {
+          "name": "TZ",
+          "label": "Time Zone",
+          "default": "UTC"
+        }
+      ]
+    }
+  ]
+}
